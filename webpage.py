@@ -1,1 +1,164 @@
+import streamlit as st
+import os
+import requests
+from streamlit_lottie import st_lottie
+import ssl
+import base64
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import socket
 
+
+
+# Create an SSL context with TLS protocol version
+context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+
+# Disable SSL/TLS compression
+context.options |= ssl.OP_NO_COMPRESSION
+
+# Create a socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Wrap the socket with the SSL context
+secure_sock = context.wrap_socket(sock, server_hostname='example.com')
+
+# Now you can use secure_sock to communicate securely with the server
+
+receiver_email = "thebryanperfecto@gmail.com"
+
+st.set_page_config(page_title="My Webpage", layout="wide")  # or "wide", "centered", "wide", or "wide"
+
+
+def load_lottieurl(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+# ---- LOAD ASSETS ----
+lottie_coding1 = load_lottieurl("https://lottie.host/87dcc3a3-d4bf-4880-b3c4-b1f9c25eb568/YsSVFpoZH7.json")
+lottie_coding2 = load_lottieurl("https://lottie.host/b1933004-2318-4fc0-b1c7-e125c47a48f8/3ekXOhiQSz.json")
+lottie_coding3 = load_lottieurl("https://lottie.host/0a0a3a78-73d0-4b9e-badc-f356b5ebbc91/Gv0DWqCeTo.json")
+lottie_coding4 = load_lottieurl("https://lottie.host/5ce1765c-4e60-42ac-b623-85b612f6aac8/Y6u8nyymqX.json")
+
+
+# ---- MAIN HEADER SECTION ----
+with st.container():
+  left_column, right_column = st.columns(2)
+  with left_column:
+    st.header("Hello, I am Bryan Perfecto")
+    st.title("An aspiring IT professional")
+    st.write(
+        "I am passionate about all things IT. While I have dedicated most of my time to Cyber Security, I have recently dicovered a passion for coding!")
+  with right_column:
+    st_lottie(lottie_coding4, height=300, key="coding3")
+  
+# ---- MORE ABOUT MYSELF ----
+with st.container():
+    st.write("---")
+    left_column, middle_column, right_column = st.columns(3)
+    with left_column:
+        st.header("A little about me")
+        st.write("##")
+        st.write(
+              """
+                - I have been learning about IT in multiple different ways including self teaching, Coursera, 
+                and in person at ACI Learning.
+                - I have a strong technical background with physical components 
+                and have very little issue creating a strong and secure network.
+                - I have created a Network Area Storage on my home Network 
+                as a project that allowed me to put my knowledge to the test.
+                - I have built many personal computers and installed the operating systems for them; 
+                Most recently I have removed MacOS from an old MacBook Pro and installed Ubuntu Linux. 
+              """
+            )
+    with right_column:
+      st.header("My Portfolio")
+      st.write("Project One")
+      st.write("Project Two")
+      st.write("Project Three")
+    with middle_column:
+        st_lottie(lottie_coding1, height=250, key="coding2")
+            
+
+import streamlit as st
+import smtplib
+import ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+# ... (your existing code here) ...
+
+import streamlit as st
+import smtplib
+import ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+# ... (your existing code here) ...
+
+import smtplib
+import ssl
+import streamlit as st
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+# ... (load lottie animations and other setup code) ...
+
+
+# ---- LETS CONNECT ----
+st.write("---")
+left_column, right_column = st.columns(2)
+
+# Right column: animation
+with right_column:
+    st_lottie(lottie_coding2, height=400, key="coding1")
+
+    # Left column: input fields
+    with left_column:
+        st.header("Let's connect")
+        name = st.text_input("Name: ")
+        call = st.text_input("Number: ")
+        sender_email = st.text_input("Enter your email address: ")
+        message = st.text_area("Contact me directly: ")
+
+        # Button to send an email
+        if st.button("Email Me"):
+            if sender_email and message:
+                try:
+                    # Create an SMTP connection to Gmail's server with SSL
+                    context = ssl.create_default_context()
+                    server = smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context)
+
+                    # Access gmail from secrets
+                    door = st.secrets["gmail"]["door"]
+                    key = st.secrets["gmail"]["key"]
+
+                    # Login to your Gmail account
+                    server.login(st.secrets["gmail"]["door"], st.secrets["gmail"]["key"])  # Use your actual Gmail email and password
+
+                    # Create the email body with sender's email address, name, call, and message
+                    email_body = f"Sender Email: {sender_email}\nName: {name}\nNumber: {call}\n\n{message}"
+
+                    # Create a MIMEText object with your message
+                    email_message = MIMEMultipart()
+                    email_message["From"] = sender_email  # Set the sender's email address
+                    email_message["To"] = receiver_email
+                    email_message["Subject"] = "New Message from {sender_email}"  # Include sender email in the subject
+                    email_message.attach(MIMEText(email_body, name, call, "plain"))
+
+                    # Send the email
+                    server.sendmail(sender_email, receiver_email, email_message.as_string())
+
+                    # Send the email
+                    server.sendmail(sender_email, receiver_email, email_message.as_string())
+
+                    # Close the connection
+                    server.close()
+
+                    st.success(f"Email sent to: {receiver_email}")
+                except Exception as e:
+                    st.error(f"Email could not be sent. Error: {e}")
+            else:
+                st.warning("Please enter both your email address and message.")
